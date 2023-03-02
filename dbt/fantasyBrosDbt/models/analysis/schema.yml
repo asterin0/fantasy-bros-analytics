@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: dim_players
+    columns:
+      - name: player
+        tests:
+          - unique
+          - not_null
+  - name: dim_benchmarks
+    columns:
+      - name: pos
+        tests:
+          - unique
+          - not_null
+      - name: proj_benchmark_pts
+        tests:
+          - not_null
+  - name: dim_players_history
+    columns:
+      - name: player
+        tests:
+          - not_null
+  - name: fact_valuations
+    columns:
+      - name: player
+        tests:
+          - unique
+          - not_null
