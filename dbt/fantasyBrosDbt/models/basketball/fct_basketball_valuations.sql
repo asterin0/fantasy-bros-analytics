@@ -1,6 +1,6 @@
 with flex_benchmark as (
 	select *
-	from "analysis"."dim_benchmarks"
+	from "basketball"."dim_basketball_benchmarks"
 	where "pos" = 'ALL'
 	),
 
@@ -31,32 +31,32 @@ player_benchmarks as (
 		,players."proj_fantasy_pts" - g_bench."proj_benchmark_pts" as value_over_g
 		,players."proj_fantasy_pts" - f_bench."proj_benchmark_pts" as value_over_f
 		,players."proj_fantasy_pts" - flex_benchmark."proj_benchmark_pts" as value_over_all_pos
-	from "analysis"."dim_players" players
-	left join "analysis"."dim_benchmarks" as pg_bench on ((players."pos_pg"=1) and (pg_bench."pos"='PG'))
-	left join "analysis"."dim_benchmarks" as sg_bench on ((players."pos_sg"=1) and (sg_bench."pos"='SG'))
-	left join "analysis"."dim_benchmarks" as sf_bench on ((players."pos_sf"=1) and (sf_bench."pos"='SF'))
-	left join "analysis"."dim_benchmarks" as pf_bench on ((players."pos_pf"=1) and (pf_bench."pos"='PF'))
-	left join "analysis"."dim_benchmarks" as c_bench on ((players."pos_c"=1) and (c_bench."pos"='C'))
-	left join "analysis"."dim_benchmarks" as g_bench on ((players."pos_g"=1) and (g_bench."pos"='G'))
-	left join "analysis"."dim_benchmarks" as f_bench on ((players."pos_f"=1) and (f_bench."pos"='F'))
+	from "basketball"."dim_basketball_players" players
+	left join "basketball"."dim_basketball_benchmarks" as pg_bench on ((players."pos_pg"=1) and (pg_bench."pos"='PG'))
+	left join "basketball"."dim_basketball_benchmarks" as sg_bench on ((players."pos_sg"=1) and (sg_bench."pos"='SG'))
+	left join "basketball"."dim_basketball_benchmarks" as sf_bench on ((players."pos_sf"=1) and (sf_bench."pos"='SF'))
+	left join "basketball"."dim_basketball_benchmarks" as pf_bench on ((players."pos_pf"=1) and (pf_bench."pos"='PF'))
+	left join "basketball"."dim_basketball_benchmarks" as c_bench on ((players."pos_c"=1) and (c_bench."pos"='C'))
+	left join "basketball"."dim_basketball_benchmarks" as g_bench on ((players."pos_g"=1) and (g_bench."pos"='G'))
+	left join "basketball"."dim_basketball_benchmarks" as f_bench on ((players."pos_f"=1) and (f_bench."pos"='F'))
 	cross join flex_benchmark
 	),
 	
 projections_over_time as (
 	SELECT history."player"
-		,CASE WHEN EXISTS (SELECT history."projection_date" FROM "analysis"."dim_players_history" history WHERE history."projection_date"=(CURRENT_DATE-1))
+		,CASE WHEN EXISTS (SELECT history."projection_date" FROM "basketball"."dim_basketball_players_history" history WHERE history."projection_date"=(CURRENT_DATE-1))
 			THEN SUM(CASE WHEN history."projection_date"=(CURRENT_DATE) THEN history."proj_fantasy_pts" ELSE 0.0 END)-SUM(CASE WHEN history."projection_date"=(CURRENT_DATE-1) THEN history."proj_fantasy_pts" ELSE 0.0 END) 
 			ELSE 0.0
 			END AS one_day_projection_delta
-		,CASE WHEN EXISTS (SELECT history."projection_date" FROM "analysis"."dim_players_history" history WHERE history."projection_date"=(CURRENT_DATE-5))
+		,CASE WHEN EXISTS (SELECT history."projection_date" FROM "basketball"."dim_basketball_players_history" history WHERE history."projection_date"=(CURRENT_DATE-5))
 			THEN SUM(CASE WHEN history."projection_date"=(CURRENT_DATE) THEN history."proj_fantasy_pts" ELSE 0.0 END)-SUM(CASE WHEN history."projection_date"=(CURRENT_DATE-5) THEN history."proj_fantasy_pts" ELSE 0.0 END) 
 			ELSE 0.0
 			END AS five_day_projection_delta
-		,CASE WHEN EXISTS (SELECT history."projection_date" FROM "analysis"."dim_players_history" history WHERE history."projection_date"=(CURRENT_DATE-10))
+		,CASE WHEN EXISTS (SELECT history."projection_date" FROM "basketball"."dim_basketball_players_history" history WHERE history."projection_date"=(CURRENT_DATE-10))
 			THEN SUM(CASE WHEN history."projection_date"=(CURRENT_DATE) THEN history."proj_fantasy_pts" ELSE 0.0 END)-SUM(CASE WHEN history."projection_date"=(CURRENT_DATE-10) THEN history."proj_fantasy_pts" ELSE 0.0 END) 
 			ELSE 0.0
 			END AS ten_day_projection_delta
-	FROM "analysis"."dim_players_history" history
+	FROM "basketball"."dim_basketball_players_history" history
 	GROUP BY history."player"
 	),
 	
