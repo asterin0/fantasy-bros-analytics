@@ -1,9 +1,8 @@
 FROM apache/airflow:slim-latest-python3.9
 
-WORKDIR /Projects/fantasy-bros-analytics
-
 # Copying project files
-COPY . .
+COPY ./fantasyBros ./fantasyBros
+COPY ./requirementsDev.txt ./requirementsDev.txt
 
 # Install git as root user for dbt compatibility
 USER root
@@ -15,8 +14,7 @@ RUN chmod -R 777 ./
 
 # Switching to airflow user for airflow-init server compatibility and installing 
 USER airflow
-RUN pip install -r requirements.txt
+RUN pip install -r requirementsDev.txt
 
-# Installing data ingestion scripts as package and adding to path
-RUN python3 app/setup.py install --user
-ENV PYTHONPATH "${PYTHONPATH}:/app"
+# Installing data scraper scripts as package and adding to path
+RUN pip install ./fantasyBros
