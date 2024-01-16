@@ -4,3 +4,6 @@ logs/
 plugins/
 config.cfg
 .env
+minio/
+.minio/
+.pytest_cache/
