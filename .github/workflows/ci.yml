@@ -1,0 +1,22 @@
+name: CI
+on: [pull_request]
+jobs:
+  run-ci-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+      - uses: actions/checkout@v2
+      - name: Spin up containers
+      - uses: docker-compose up --build
+      - name: Spin up containers
+      - uses: docker-compose up --build
+      - name: Run isort
+      - uses: docker exec webserver isort .
+      - name: Run formatter
+      - uses: docker exec webserver python -m black -S --line-length 79 .
+      - name: Run linter
+      - uses: docker exec webserver flake8 --extend-ignore=E501,W605 /opt/airflow
+      - name: Run PyTest
+      - uses: docker exec webserver pytest -p no:warnings
+
+
