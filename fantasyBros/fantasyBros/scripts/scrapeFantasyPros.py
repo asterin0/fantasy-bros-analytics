@@ -1,13 +1,6 @@
 import pandas as pd
-import requests
-import json
+from espn_api.football import League as League
 from unidecode import unidecode
-from datetime import datetime
-from espn_api.football import League
-from espn_api.basketball import League
-
-import os
-from dotenv import load_dotenv
 
 
 def getFootballProjections(pos: str):
@@ -15,12 +8,12 @@ def getFootballProjections(pos: str):
     Scrape fantasy football projections from fantasyPros website
     """
     if pos == "qb":
-        fantasyProsUrl = f"https://www.fantasypros.com/nfl/projections/{pos}.php"
+        fantasyProsUrl = (
+            f"https://www.fantasypros.com/nfl/projections/{pos}.php"
+        )
 
     else:
-        fantasyProsUrl = (
-            f"https://www.fantasypros.com/nfl/projections/{pos}.php?scoring=PPR"
-        )
+        fantasyProsUrl = f"https://www.fantasypros.com/nfl/projections/{pos}.php?scoring=PPR"
 
     try:
         # Making request to fantasyPros url
@@ -33,7 +26,9 @@ def getFootballProjections(pos: str):
         players[["player_name", "player_team_id"]] = players[
             "unnamed: 0_level_0_player"
         ].str.rsplit(" ", 1, expand=True)
-        players = players.drop(["unnamed: 0_level_0_player", "misc_fpts"], axis=1)
+        players = players.drop(
+            ["unnamed: 0_level_0_player", "misc_fpts"], axis=1
+        )
 
         print(f"Projections for {pos} successfully scraped!")
 
@@ -47,7 +42,7 @@ def getBasketballProjections(pos: str):
     """
     Scrape fantasy basketball projections from fantasyPros website
     """
-    fProsUrl = f"https://www.fantasypros.com/nba/projections/avg-ros-{pos}.php"
+    fProsUrl = f"https://www.fantasypros.com/nba/projections/ros-{pos}.php"
 
     try:
         playersDf = pd.read_html(fProsUrl)[0]
@@ -66,9 +61,7 @@ def getProBasketballReferenceStats(year: str):
     """
     Scrape stats from probasketballreference to obtain variables needed for some fantasy projects (i.e. '3PA' for 3-Point Efficiency)
     """
-    proBasketballRefUrl = (
-        f"https://www.basketball-reference.com/leagues/NBA_{year}_per_game.html"
-    )
+    proBasketballRefUrl = f"https://www.basketball-reference.com/leagues/NBA_{year}_per_game.html"
 
     try:
         playersDf = pd.read_html(proBasketballRefUrl)[0]
@@ -102,28 +95,12 @@ def getEspnPlayers(leagueId: str, leagueYear: int, espnS2: str, espnSwid: str):
             )
             for p in league.teams[i].__dict__["roster"]
         ]
-        teamDf = pd.DataFrame(team, columns=["fantasy_team_name", "player_name"])
+        teamDf = pd.DataFrame(
+            team, columns=["fantasy_team_name", "player_name"]
+        )
         teams.append(teamDf)
 
     players = pd.concat(teams, axis=0, ignore_index=True)
     players["player_name"] = players["player_name"].astype(str).str[7:-1]
 
     return players
-
-
-if __name__ == "__main__":
-    # Loading environmental variables from .env
-    load_dotenv()
-
-    # Config
-    espnLeague = os.environ.get("ESPN_LEAGUEID")
-    espnYear = int(os.environ.get("ESPN_YEAR"))
-    espnSwids = os.environ.get("ESPN_SWID")
-    espnS2s = os.environ.get("ESPN_S2")
-
-    pg = getBasketballProjections("pg")
-    pbrStats = getProBasketballReferenceStats("2024")
-
-    print(pg.head())
-    print(pbrStats.columns)
-    print(pbrStats.head())

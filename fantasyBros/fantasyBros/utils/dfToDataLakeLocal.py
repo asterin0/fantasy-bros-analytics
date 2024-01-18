@@ -1,10 +1,10 @@
 import os
-import pandas as pd
 from datetime import datetime
 from io import BytesIO
 
+import pandas as pd
+
 from minio import Minio
-from minio.error import S3Error
 
 
 def loadDataFrameToLocalFolder(
@@ -26,7 +26,10 @@ def loadDataFrameToLocalFolder(
 
         finTime = datetime.now()
 
-        print("Projections successfully saved! Execution time: ", finTime - initTime)
+        print(
+            "Projections successfully saved! Execution time: ",
+            finTime - initTime,
+        )
 
     except Exception as e:
         print("Error in sending dataframe to landing directory: ", str(e))

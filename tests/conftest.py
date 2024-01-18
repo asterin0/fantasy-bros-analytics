@@ -1,12 +1,14 @@
-import pytest
 import os
+
+import pytest
 from dotenv import load_dotenv
-from sqlalchemy.dialects.postgresql import VARCHAR, INTEGER, FLOAT, BOOLEAN
+from sqlalchemy.dialects.postgresql import BOOLEAN, FLOAT, INTEGER, VARCHAR
+
 from fantasyBros.scripts.scrapeFantasyPros import (
-    getFootballProjections,
     getBasketballProjections,
-    getProBasketballReferenceStats,
     getEspnPlayers,
+    getFootballProjections,
+    getProBasketballReferenceStats,
 )
 from fantasyBros.utils.devSetupLocal import fieldProcessing
 
@@ -40,7 +42,9 @@ class testFantasyBrosScraper:
             scraperDf = getBasketballProjections(position)
             players = scraperDf["Player"].values
 
-        elif position == "proBasketballRefStats":  # Pro Basketball Reference Stats
+        elif (
+            position == "proBasketballRefStats"
+        ):  # Pro Basketball Reference Stats
             scraperDf = getProBasketballReferenceStats("2024")
             players = scraperDf["Player"].values
 
@@ -78,7 +82,9 @@ class testFantasyBrosScraper:
         ]:  # FantasyPros Basketball
             scraperDf = getBasketballProjections(position)
 
-        elif position == "proBasketballRefStats":  # Pro Basketball Reference Stats
+        elif (
+            position == "proBasketballRefStats"
+        ):  # Pro Basketball Reference Stats
             scraperDf = getProBasketballReferenceStats("2024")
 
         # Using sets to identify fields in scraped column list that are not currently taken into account
@@ -111,21 +117,24 @@ class testFantasyBrosScraper:
         ]:  # Basketball
             scraperDf = getBasketballProjections(position)
 
-        elif position == "proBasketballRefStats":  # Pro Basketball Reference Stats
+        elif (
+            position == "proBasketballRefStats"
+        ):  # Pro Basketball Reference Stats
             scraperDf = getProBasketballReferenceStats("2024")
 
         # Creating dictionaries for max value length in web columns and currently specified column lengths respectively for comparison
         webColLengths = {
-            col: max(scraperDf[col].astype(str).apply(len)) for col in scraperDf.columns
+            col: max(scraperDf[col].astype(str).apply(len))
+            for col in scraperDf.columns
         }
         controllerColLengths = {}
 
         for key, val in metadata.dTypes.items():
-            if type(val) == VARCHAR:
+            if isinstance(val, VARCHAR):
                 controllerColLengths[key] = val.length
             elif type(val) in [INTEGER, FLOAT]:
                 controllerColLengths[key] = 64
-            elif type(val) == BOOLEAN:
+            elif isinstance(val, BOOLEAN):
                 controllerColLengths[key] = 5
 
         # Checking max value lengths in web againts currently specified column value lengths

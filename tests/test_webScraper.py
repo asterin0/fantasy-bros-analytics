@@ -1,6 +1,5 @@
 import pytest
 
-
 # Defining positions to test
 positions = [
     # Football positions

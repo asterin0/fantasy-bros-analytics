@@ -1,11 +1,7 @@
-import os
 import pandas as pd
-from datetime import datetime
-from io import BytesIO
-
-from minio import Minio
 
 from fantasyBros.utils.devSetupLocal import createLocalEngine, fieldProcessing
+from minio import Minio
 
 
 def scrapeDataFromMinioBucket(

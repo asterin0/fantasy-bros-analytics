@@ -1,24 +1,20 @@
 import os
+from datetime import datetime, timedelta
+
 import pendulum
-import airflow
+
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
-from datetime import date, timedelta, datetime
-
 from fantasyBros.scripts.scrapeFantasyPros import (
-    getFootballProjections,
     getEspnPlayers,
-)
-from fantasyBros.utils.dfToDataLakeLocal import (
-    loadDataFrameToLocalFolder,
-    loadDataToMinioBucket,
+    getFootballProjections,
 )
 from fantasyBros.utils.dataLakeToDbLocal import (
     scrapeDataFromMinioBucket,
     sendDataToPostgres,
 )
-
+from fantasyBros.utils.dfToDataLakeLocal import loadDataToMinioBucket
 
 # Config
 minioAccessKey = os.environ.get("AIRFLOW__CONN__MINIO_ROOT_USER")
@@ -90,7 +86,9 @@ def webScrapeProjs():
 
 # Setting webScrapeProjs as Airflow Task
 scrapeDataAndLoadToDataLake = PythonOperator(
-    task_id="scrapeDataAndLoadToDataLake", python_callable=webScrapeProjs, dag=dag
+    task_id="scrapeDataAndLoadToDataLake",
+    python_callable=webScrapeProjs,
+    dag=dag,
 )
 
 
@@ -135,7 +133,7 @@ loadProjsFromDataLakeToStageTable = PythonOperator(
 # Bash command for dim_players dbt model
 playersDimModel = BashOperator(
     task_id="playersDimModel",
-    bash_command="cd dbt/fantasyBrosDbt && dbt run --select football.dim_players --profiles-dir .",
+    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.dim_players --profiles-dir .",
     dag=dag,
 )
 
@@ -143,7 +141,7 @@ playersDimModel = BashOperator(
 # Bash command for dim_players_history dbt model
 fantasyTeamsDimModel = BashOperator(
     task_id="fantasyTeamsDimModel",
-    bash_command="cd dbt/fantasyBrosDbt && dbt run --select football.dim_fantasy_teams --profiles-dir .",
+    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.dim_fantasy_teams --profiles-dir .",
     dag=dag,
 )
 
@@ -151,7 +149,7 @@ fantasyTeamsDimModel = BashOperator(
 # Bash command for dim_players_history dbt model
 playersHistoryDimModel = BashOperator(
     task_id="playersHistoryDimModel",
-    bash_command="cd dbt/fantasyBrosDbt && dbt run --select football.dim_players_history --profiles-dir .",
+    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.dim_players_history --profiles-dir .",
     dag=dag,
 )
 
@@ -159,7 +157,7 @@ playersHistoryDimModel = BashOperator(
 # Bash command for dim_benchmarks dbt model
 benchmarksDimModel = BashOperator(
     task_id="benchmarksDimModel",
-    bash_command="cd dbt/fantasyBrosDbt && dbt run --select football.dim_benchmarks --profiles-dir .",
+    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.dim_benchmarks --profiles-dir .",
     dag=dag,
 )
 
@@ -167,7 +165,7 @@ benchmarksDimModel = BashOperator(
 # Bash command for fact_valuations dbt model
 valuationsFactModel = BashOperator(
     task_id="valuationsFactModel",
-    bash_command="cd dbt/fantasyBrosDbt && dbt run --select football.fct_valuations --profiles-dir .",
+    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.fct_valuations --profiles-dir .",
     dag=dag,
 )
 

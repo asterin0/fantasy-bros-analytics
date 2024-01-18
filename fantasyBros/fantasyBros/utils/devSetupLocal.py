@@ -1,13 +1,12 @@
-import os
-import psycopg2
 from sqlalchemy import create_engine
-from dotenv import load_dotenv
-from sqlalchemy.dialects.postgresql import VARCHAR, INTEGER, FLOAT, BOOLEAN
+from sqlalchemy.dialects.postgresql import FLOAT, INTEGER, VARCHAR
 
 
 # Creating connection string using config template and creating sqlalchemy engine
 def createLocalEngine(user: str, pswrd: str, host: str, port: str, db: str):
-    connectionString = f"postgresql+psycopg2://{user}:{pswrd}@{host}:{port}/{db}"
+    connectionString = (
+        f"postgresql+psycopg2://{user}:{pswrd}@{host}:{port}/{db}"
+    )
 
     # Define sql alchemy engine
     return create_engine(connectionString)
@@ -20,8 +19,12 @@ class fieldProcessing:
 
     # Parsing dataframes for corresponding fields and postgres datatypes
     def dataTypeParser(self, endpoint: str, fields):
-        fieldsProcessed = [k for k, v in fields.items() if endpoint in v["type"]]
-        dataTypes = [v["dataType"] for k, v in fields.items() if endpoint in v["type"]]
+        fieldsProcessed = [
+            k for k, v in fields.items() if endpoint in v["type"]
+        ]
+        dataTypes = [
+            v["dataType"] for k, v in fields.items() if endpoint in v["type"]
+        ]
 
         return dict(zip(fieldsProcessed, dataTypes))
 
@@ -65,7 +68,10 @@ class fieldProcessing:
                 "type": self.allFantasyProsFields,
                 "dataType": VARCHAR(100),
             },
-            "misc_fl": {"type": self.allFantasyProsFields, "dataType": FLOAT()},
+            "misc_fl": {
+                "type": self.allFantasyProsFields,
+                "dataType": FLOAT(),
+            },
             "passing_att": {"type": ["qb"], "dataType": FLOAT()},
             "passing_cmp": {"type": ["qb"], "dataType": FLOAT()},
             "passing_yds": {"type": ["qb"], "dataType": FLOAT()},
@@ -86,20 +92,59 @@ class fieldProcessing:
                 "type": self.allFantasyProsBasketballFields,
                 "dataType": VARCHAR(3),
             },
-            "PTS": {"type": self.allFantasyBasketballFields, "dataType": FLOAT()},
-            "REB": {"type": self.allFantasyProsBasketballFields, "dataType": FLOAT()},
-            "AST": {"type": self.allFantasyBasketballFields, "dataType": FLOAT()},
-            "BLK": {"type": self.allFantasyBasketballFields, "dataType": FLOAT()},
-            "STL": {"type": self.allFantasyBasketballFields, "dataType": FLOAT()},
-            "FG%": {"type": self.allFantasyBasketballFields, "dataType": FLOAT()},
-            "FT%": {"type": self.allFantasyBasketballFields, "dataType": FLOAT()},
-            "3PM": {"type": self.allFantasyProsBasketballFields, "dataType": FLOAT()},
-            "GP": {"type": self.allFantasyProsBasketballFields, "dataType": FLOAT()},
-            "MIN": {"type": self.allFantasyProsBasketballFields, "dataType": FLOAT()},
-            "TO": {"type": self.allFantasyProsBasketballFields, "dataType": FLOAT()},
+            "PTS": {
+                "type": self.allFantasyBasketballFields,
+                "dataType": FLOAT(),
+            },
+            "REB": {
+                "type": self.allFantasyProsBasketballFields,
+                "dataType": FLOAT(),
+            },
+            "AST": {
+                "type": self.allFantasyBasketballFields,
+                "dataType": FLOAT(),
+            },
+            "BLK": {
+                "type": self.allFantasyBasketballFields,
+                "dataType": FLOAT(),
+            },
+            "STL": {
+                "type": self.allFantasyBasketballFields,
+                "dataType": FLOAT(),
+            },
+            "FG%": {
+                "type": self.allFantasyBasketballFields,
+                "dataType": FLOAT(),
+            },
+            "FT%": {
+                "type": self.allFantasyBasketballFields,
+                "dataType": FLOAT(),
+            },
+            "3PM": {
+                "type": self.allFantasyProsBasketballFields,
+                "dataType": FLOAT(),
+            },
+            "GP": {
+                "type": self.allFantasyProsBasketballFields,
+                "dataType": FLOAT(),
+            },
+            "MIN": {
+                "type": self.allFantasyProsBasketballFields,
+                "dataType": FLOAT(),
+            },
+            "TO": {
+                "type": self.allFantasyProsBasketballFields,
+                "dataType": FLOAT(),
+            },
             # ProBasketballReference only fields
-            "Rk": {"type": ["proBasketballRefStats"], "dataType": VARCHAR(100)},
-            "Pos": {"type": ["proBasketballRefStats"], "dataType": VARCHAR(100)},
+            "Rk": {
+                "type": ["proBasketballRefStats"],
+                "dataType": VARCHAR(100),
+            },
+            "Pos": {
+                "type": ["proBasketballRefStats"],
+                "dataType": VARCHAR(100),
+            },
             "Age": {"type": ["proBasketballRefStats"], "dataType": VARCHAR(2)},
             "Tm": {"type": ["proBasketballRefStats"], "dataType": VARCHAR(3)},
             "G": {"type": ["proBasketballRefStats"], "dataType": INTEGER()},
@@ -122,8 +167,13 @@ class fieldProcessing:
             "TOV": {"type": ["proBasketballRefStats"], "dataType": FLOAT()},
             "PF": {"type": ["proBasketballRefStats"], "dataType": FLOAT()},
             # Only ESPN fields
-            "fantasy_team_name": {"type": ["espnLeague"], "dataType": VARCHAR(100)},
+            "fantasy_team_name": {
+                "type": ["espnLeague"],
+                "dataType": VARCHAR(100),
+            },
         }
 
         # Running datatype parser function on endpoint of interest
-        self.dTypes = self.dataTypeParser(endpoint=self.endpoint, fields=self.fields)
+        self.dTypes = self.dataTypeParser(
+            endpoint=self.endpoint, fields=self.fields
+        )
