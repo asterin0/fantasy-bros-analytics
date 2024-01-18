@@ -8,8 +8,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Spin up containers
       - uses: docker-compose up --build
-      - name: Spin up containers
-      - uses: docker-compose up --build
       - name: Run isort
       - uses: docker exec webserver isort .
       - name: Run formatter
