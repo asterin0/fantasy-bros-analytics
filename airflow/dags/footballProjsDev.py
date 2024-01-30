@@ -2,10 +2,10 @@ import os
 from datetime import datetime, timedelta
 
 import pendulum
-
-from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
+
+from airflow import DAG
 from fantasyBros.scripts.scrapeFantasyPros import (
     getEspnPlayers,
     getFootballProjections,

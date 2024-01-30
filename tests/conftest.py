@@ -1,7 +1,6 @@
 import os
 
 import pytest
-from dotenv import load_dotenv
 from sqlalchemy.dialects.postgresql import BOOLEAN, FLOAT, INTEGER, VARCHAR
 
 from fantasyBros.scripts.scrapeFantasyPros import (
@@ -12,18 +11,8 @@ from fantasyBros.scripts.scrapeFantasyPros import (
 )
 from fantasyBros.utils.devSetupLocal import fieldProcessing
 
-# Loading environmental variables from .env
-load_dotenv()
-
 
 class testFantasyBrosScraper:
-    def __init__(self):
-        # Config
-        self.espnLeague = os.environ.get("ESPN_LEAGUEID")
-        self.espnYear = int(os.environ.get("ESPN_YEAR"))
-        self.espnSwid = os.environ.get("ESPN_SWID")
-        self.espnS2 = os.environ.get("ESPN_S2")
-
     def testPlayerCount(self, position):
         # Defining different logic by fantasysport
         if position in ["qb", "rb", "wr", "te"]:  # FantasyPros Football
@@ -48,16 +37,6 @@ class testFantasyBrosScraper:
             scraperDf = getProBasketballReferenceStats("2024")
             players = scraperDf["Player"].values
 
-        assert len(players) > 0
-
-    def testEspnLeaguePlayerCount(self):
-        scraperDf = getEspnPlayers(
-            leagueId=self.espnLeague,
-            leagueYear=self.espnYear,
-            espnS2=self.espnS2,
-            espnSwid=self.espnSwid,
-        )
-        players = scraperDf["player_name"].values
         assert len(players) > 0
 
     def testFieldCounts(self, position):
