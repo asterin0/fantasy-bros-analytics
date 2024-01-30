@@ -10,7 +10,7 @@ jobs:
       - name: Build docker image and spin up container
         run: |
           docker build -t fantasybros-airflow .
-          docker run -ti --entrypoint bash  --name fantasybros-ci fantasybros-airflow
+          docker run --entrypoint bash  --name fantasybros-ci fantasybros-airflow
       
       - name: Run formatters and linter
         run: |
