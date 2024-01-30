@@ -6,8 +6,6 @@ WORKDIR /opt/airflow
 COPY ./fantasyBros /opt/airflow/fantasyBros
 COPY ./requirementsDev.txt /opt/airflow/requirementsDev.txt
 COPY ./airflow/dags /opt/airflow/dags
-COPY ./airflow/logs /opt/airflow/logs
-COPY ./airflow/plugins /opt/airflow/plugins
 COPY ./dbt /opt/airflow/dbt
 COPY ./tests /opt/airflow/tests
 COPY ./airflow/config/initdb.sql /opt/airflow/initdb.sql
