@@ -11,6 +11,7 @@ jobs:
         run: |
           docker build -t fantasybros-airflow .
           docker run -t --entrypoint bash  --name fantasybros-ci fantasybros-airflow
+          isort .
       
       - name: Run formatters and linter
         run: |
