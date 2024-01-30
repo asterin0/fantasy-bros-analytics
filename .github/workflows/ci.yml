@@ -14,9 +14,9 @@ jobs:
       
       - name: Run formatters and linter
         run: |
-          isort .
-          python -m black -S --line-length 79 .
-          flake8 --extend-ignore=E501,W605 /opt/airflow
+          docker exec fantasybros-ci isort .
+          docker exec fantasybros-ci python -m black -S --line-length 79 .
+          docker exec fantasybros-ci flake8 --extend-ignore=E501,W605 /opt/airflow
 
       - name: Run tests
-        run: pytest -p no:warnings
+        run: docker exec fantasybros-ci pytest -p no:warnings
