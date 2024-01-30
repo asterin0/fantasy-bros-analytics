@@ -1,44 +1,5 @@
 ---
 version: '3'
-x-airflow-common:
-  &airflow-common
-  build: .
-  environment:
-    &airflow-common-env
-    AIRFLOW__CORE__EXECUTOR: LocalExecutor
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-    # For backward compatibility, with Airflow <2.3
-    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
-    AIRFLOW__CORE__FERNET_KEY: ''
-    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-    AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
-    AIRFLOW__CONN__POSTGRES_LOCAL_USER: ${AIRFLOW__CONN__POSTGRES_LOCAL_USER}
-    AIRFLOW__CONN__POSTGRES_LOCAL_PASSWORD: ${AIRFLOW__CONN__POSTGRES_LOCAL_PASSWORD}
-    AIRFLOW__CONN__POSTGRES_LOCAL_HOST: ${AIRFLOW__CONN__POSTGRES_LOCAL_HOST}
-    AIRFLOW__CONN__POSTGRES_LOCAL_PORT: ${AIRFLOW__CONN__POSTGRES_LOCAL_PORT}
-    AIRFLOW__CONN__POSTGRES_LOCAL_DB: ${AIRFLOW__CONN__POSTGRES_LOCAL_DB}
-    AIRFLOW__CONN__MINIO_ROOT_USER: ${AIRFLOW__CONN__MINIO_ROOT_USER}
-    AIRFLOW__CONN__MINIO_ROOT_PASSWORD: ${AIRFLOW__CONN__MINIO_ROOT_PASSWORD}
-    ESPN_YEAR: ${ESPN_YEAR}
-    ESPN_LEAGUEID: ${ESPN_LEAGUEID}
-    ESPN_SWID: ${ESPN_SWID}
-    ESPN_S2: ${ESPN_S2}
-    _PIP_ADDITIONAL_REQUIREMENTS: ''
-  volumes:
-    - ./airflow/dags:/opt/airflow/dags
-    - ./airflow/logs:/opt/airflow/logs
-    - ./airflow/plugins:/opt/airflow/plugins
-    - ./dbt/fantasyBrosDbt:/opt/airflow/dbt/fantasyBrosDbt
-    - ./tests:/opt/airflow/tests
-  user: "${AIRFLOW_UID}:0"
-  depends_on:
-    &airflow-common-depends-on
-    postgres:
-      condition: service_healthy
-
 x-minio-common: &minio-common
   image: quay.io/minio/minio:latest
   command: server --console-address ":9090" /data
@@ -61,7 +22,7 @@ services:
       - POSTGRES_DB=${AIRFLOW__CONN__POSTGRES_LOCAL_DB}
     volumes:
       - postgres-ff-db-volume:/var/lib/postgresql/data
-      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+      - ./airflow/config/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
     healthcheck:
       test: ["CMD", "pg_isready -U ${AIRFLOW__CONN__POSTGRES_LOCAL_USER} -d ${AIRFLOW__CONN__POSTGRES_LOCAL_DB}"]
       interval: 5s
@@ -73,9 +34,9 @@ services:
   postgres:
     image: postgres:13
     environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
+      POSTGRES_USER: ${AIRFLOW_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${AIRFLOW_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${AIRFLOW_POSTGRES_DB}
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
@@ -104,7 +65,9 @@ services:
           - "15432:80"
 
   airflow-webserver:
-    <<: *airflow-common
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: webserver
     container_name: webserver
     ports:
@@ -114,39 +77,11 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
+    env_file:
+      - .env
     restart: always
     depends_on:
-      <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
-
-  airflow-scheduler:
-    <<: *airflow-common
-    command: scheduler
-    container_name: scheduler
-    healthcheck:
-      test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
-      interval: 10s
-      timeout: 10s
-      retries: 5
-    restart: always
-    depends_on:
-      <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
-
-  airflow-init:
-    <<: *airflow-common
-    command: version
-    environment:
-      <<: *airflow-common-env
-      _AIRFLOW_DB_MIGRATE: 'true'
-      _AIRFLOW_WWW_USER_CREATE: 'true'
-      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
-      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
-    user: "0:0"
-    #volumes:
-    #  - ${AIRFLOW_PROJ_DIR:-.}:/sources
+      - postgres
 
 
 volumes:
