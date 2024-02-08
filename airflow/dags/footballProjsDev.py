@@ -10,21 +10,23 @@ from fantasyBros.scripts.scrapeFantasyPros import (
     getEspnPlayers,
     getFootballProjections,
 )
-from fantasyBros.utils.dataLakeToDbLocal import (
+from fantasyBros.utils.dataLakeToDb import (
     scrapeDataFromMinioBucket,
     sendDataToPostgres,
 )
-from fantasyBros.utils.dfToDataLakeLocal import loadDataToMinioBucket
+from fantasyBros.utils.dfToDataLake import loadDataToMinioBucket
 
 # Config
 minioAccessKey = os.environ.get("AIRFLOW__CONN__MINIO_ROOT_USER")
 minioSecretKey = os.environ.get("AIRFLOW__CONN__MINIO_ROOT_PASSWORD")
-postgresUser = os.environ.get("AIRFLOW__CONN__POSTGRES_LOCAL_USER")
-postgresPswrd = os.environ.get("AIRFLOW__CONN__POSTGRES_LOCAL_PASSWORD")
-postgresHost = os.environ.get("AIRFLOW__CONN__POSTGRES_LOCAL_HOST")
-postgresPort = os.environ.get("AIRFLOW__CONN__POSTGRES_LOCAL_PORT")
-postgresDatabase = os.environ.get("AIRFLOW__CONN__POSTGRES_LOCAL_DB")
+postgresUser = os.environ.get("FANTASYBROS__POSTGRES_USER")
+postgresPswrd = os.environ.get("FANTASYBROS__POSTGRES_PASSWORD")
+postgresHost = os.environ.get("FANTASYBROS__POSTGRES_HOST")
+postgresPort = os.environ.get("FANTASYBROS__POSTGRES_PORT")
+postgresDatabase = os.environ.get("FANTASYBROS__POSTGRES_DB")
+
 endpoints = ["qb", "rb", "wr", "te", "espnLeague"]
+
 espnYear = int(os.environ.get("ESPN_YEAR"))  # ESPN League Credentials
 espnLeagueId = os.environ.get("ESPN_LEAGUEID")
 espnSwid = os.environ.get("ESPN_SWID")
@@ -133,7 +135,7 @@ loadProjsFromDataLakeToStageTable = PythonOperator(
 # Bash command for dim_players dbt model
 playersDimModel = BashOperator(
     task_id="playersDimModel",
-    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.dim_players --profiles-dir .",
+    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.dim_players --profiles-dir . --target fantasyBros",
     dag=dag,
 )
 
@@ -141,7 +143,7 @@ playersDimModel = BashOperator(
 # Bash command for dim_players_history dbt model
 fantasyTeamsDimModel = BashOperator(
     task_id="fantasyTeamsDimModel",
-    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.dim_fantasy_teams --profiles-dir .",
+    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.dim_fantasy_teams --profiles-dir . --target fantasyBros",
     dag=dag,
 )
 
@@ -149,7 +151,7 @@ fantasyTeamsDimModel = BashOperator(
 # Bash command for dim_players_history dbt model
 playersHistoryDimModel = BashOperator(
     task_id="playersHistoryDimModel",
-    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.dim_players_history --profiles-dir .",
+    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.dim_players_history --profiles-dir . --target fantasyBros",
     dag=dag,
 )
 
@@ -157,7 +159,7 @@ playersHistoryDimModel = BashOperator(
 # Bash command for dim_benchmarks dbt model
 benchmarksDimModel = BashOperator(
     task_id="benchmarksDimModel",
-    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.dim_benchmarks --profiles-dir .",
+    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.dim_benchmarks --profiles-dir . --target fantasyBros",
     dag=dag,
 )
 
@@ -165,7 +167,7 @@ benchmarksDimModel = BashOperator(
 # Bash command for fact_valuations dbt model
 valuationsFactModel = BashOperator(
     task_id="valuationsFactModel",
-    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.fct_valuations --profiles-dir .",
+    bash_command="cd /opt/airflow/dbt/fantasyBrosDbt && dbt run --select football.fct_valuations --profiles-dir . --target fantasyBros",
     dag=dag,
 )
 
