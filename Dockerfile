@@ -2,9 +2,12 @@ FROM apache/airflow:slim-latest-python3.9
 
 WORKDIR /opt/airflow
 
+ARG DEV=false
+
 # Copying project files
 COPY ./fantasyBros /opt/airflow/fantasyBros
-COPY ./requirementsDev.txt /opt/airflow/requirementsDev.txt
+COPY ./requirements.dev.txt /opt/airflow/requirements.dev.txt
+COPY ./requirements.txt /opt/airflow/requirements.txt
 COPY ./airflow/dags /opt/airflow/dags
 COPY ./dbt /opt/airflow/dbt
 COPY ./tests /opt/airflow/tests
@@ -21,15 +24,12 @@ RUN apt-get -y update && \
 # Granting airflow users read-write ownership to project files
 RUN chmod -R 777 /opt/airflow/.
 
-# Switching to airflow user for airflow-init server compatibility and installing 
+# Switching to airflow user for airflow-init server compatibility and installing packages
 USER airflow
-RUN pip install -r /opt/airflow/requirementsDev.txt
-
-# Installing data scraper scripts as package and adding to path
-RUN pip install /opt/airflow/fantasyBros
-# RUN python3 /opt/airflow/fantasyBros/setup.py install --user
-# ENV PYTHONPATH "${PYTHONPATH}:/opt/airflow/fantasyBros"
-
-#EXPOSE 8008
+RUN pip install -r /opt/airflow/requirements.txt && \
+    if [ $DEV = "true" ]; then \
+    pip install -r /opt/airflow/requirements.dev.txt ; \
+    fi && \
+    pip install /opt/airflow/fantasyBros
 
 ENTRYPOINT [ "/opt/airflow/entrypoint.sh" ]
