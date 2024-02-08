@@ -21,8 +21,6 @@ sudo apt-get -y update
 sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 sudo chmod 666 /var/run/docker.sock
 
-sudo apt install make
-
 echo 'Clone git repo to EC2'
 cd /home/ubuntu && git clone ${GITHUB_REPO_URL}
 
