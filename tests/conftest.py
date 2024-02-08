@@ -28,7 +28,9 @@ class testFantasyBrosScraper:
             scraperDf = getBasketballProjections(position)
             players = scraperDf["Player"].values
 
-        elif position == "proBasketballRefStats":  # Pro Basketball Reference Stats
+        elif (
+            position == "proBasketballRefStats"
+        ):  # Pro Basketball Reference Stats
             scraperDf = getProBasketballReferenceStats("2024")
             players = scraperDf["Player"].values
 
@@ -56,7 +58,9 @@ class testFantasyBrosScraper:
         ]:  # FantasyPros Basketball
             scraperDf = getBasketballProjections(position)
 
-        elif position == "proBasketballRefStats":  # Pro Basketball Reference Stats
+        elif (
+            position == "proBasketballRefStats"
+        ):  # Pro Basketball Reference Stats
             scraperDf = getProBasketballReferenceStats("2024")
 
         # Using sets to identify fields in scraped column list that are not currently taken into account
@@ -89,12 +93,15 @@ class testFantasyBrosScraper:
         ]:  # Basketball
             scraperDf = getBasketballProjections(position)
 
-        elif position == "proBasketballRefStats":  # Pro Basketball Reference Stats
+        elif (
+            position == "proBasketballRefStats"
+        ):  # Pro Basketball Reference Stats
             scraperDf = getProBasketballReferenceStats("2024")
 
         # Creating dictionaries for max value length in web columns and currently specified column lengths respectively for comparison
         webColLengths = {
-            col: max(scraperDf[col].astype(str).apply(len)) for col in scraperDf.columns
+            col: max(scraperDf[col].astype(str).apply(len))
+            for col in scraperDf.columns
         }
         controllerColLengths = {}
 
