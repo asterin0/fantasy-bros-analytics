@@ -17,14 +17,14 @@ services:
   postgres-ff-db:
     image: postgres:13
     environment:
-      - POSTGRES_USER=${AIRFLOW__CONN__POSTGRES_LOCAL_USER}
-      - POSTGRES_PASSWORD=${AIRFLOW__CONN__POSTGRES_LOCAL_PASSWORD}
-      - POSTGRES_DB=${AIRFLOW__CONN__POSTGRES_LOCAL_DB}
+      - POSTGRES_USER=${FANTASYBROS__POSTGRES_USER}
+      - POSTGRES_PASSWORD=${FANTASYBROS__POSTGRES_PASSWORD}
+      - POSTGRES_DB=${FANTASYBROS__POSTGRES_DB}
     volumes:
       - postgres-ff-db-volume:/var/lib/postgresql/data
       - ./airflow/config/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
     healthcheck:
-      test: ["CMD", "pg_isready -U ${AIRFLOW__CONN__POSTGRES_LOCAL_USER} -d ${AIRFLOW__CONN__POSTGRES_LOCAL_DB}"]
+      test: ["CMD", "pg_isready -U ${FANTASYBROS__POSTGRES_USER} -d ${FANTASYBROS__POSTGRES_DB}"]
       interval: 5s
       retries: 5
     ports:
@@ -68,6 +68,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - DEV=true
     command: webserver
     container_name: webserver
     ports:
