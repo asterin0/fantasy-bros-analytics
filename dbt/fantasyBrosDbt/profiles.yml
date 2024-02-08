@@ -1,12 +1,12 @@
 fantasyBrosDbt:
   outputs:
-    dev:
+    fantasyBros:
       type: postgres
-      host: "{{ env_var('AIRFLOW__CONN__POSTGRES_LOCAL_HOST') }}"
-      user: "{{ env_var('AIRFLOW__CONN__POSTGRES_LOCAL_USER') }}"
-      password: "{{ env_var('AIRFLOW__CONN__POSTGRES_LOCAL_PASSWORD') }}"
-      port: "{{ env_var('AIRFLOW__CONN__POSTGRES_LOCAL_PORT') | as_number }}"
-      dbname: "{{ env_var('AIRFLOW__CONN__POSTGRES_LOCAL_DB') }}"
+      host: "{{ env_var('FANTASYBROS__POSTGRES_HOST') }}"
+      user: "{{ env_var('FANTASYBROS__POSTGRES_USER') }}"
+      password: "{{ env_var('FANTASYBROS__POSTGRES_PASSWORD') }}"
+      port: "{{ env_var('FANTASYBROS__POSTGRES_PORT') | as_number }}"
+      dbname: "{{ env_var('FANTASYBROS__POSTGRES_DB') }}"
       schema: staging
       threads: 1
       keepalives_idle: 0 # default 0, indicating the system default. See below
@@ -16,4 +16,4 @@ fantasyBrosDbt:
       role:
       sslmode:
 
-  target: dev
+  target: fantasyBros
