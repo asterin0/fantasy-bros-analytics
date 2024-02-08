@@ -1,7 +1,8 @@
 import os
 from datetime import datetime
-from io import BytesIO
+from io import BytesIO, StringIO
 
+import boto3
 import pandas as pd
 
 from minio import Minio
@@ -77,3 +78,34 @@ def loadDataToMinioBucket(
         print("Projections successfully sent!")
     except Exception as e:
         print("Error in sending dataframe to MinIO bucket: ", str(e))
+
+
+def loadDataToS3(
+    dataframe, bucketName, awsAccessKeyId, awsSecretAccessKey, landingDirectory
+):
+    """
+    Sends dataframe to S3 bucket
+    """
+    try:
+        # Creating s3 client
+        s3_session = boto3.Session(
+            aws_access_key_id=awsAccessKeyId,
+            aws_secret_access_key=awsSecretAccessKey,
+        )
+
+        # Preparing pandas dataframe and extracting metadata to be sent to boto3 client
+        df = dataframe
+        csv_buffer = StringIO()
+        df.to_csv(csv_buffer, index=False)
+
+        print("Sending projections to bucket")
+
+        # Sending dataframe to s3 client
+        s3_resource = s3_session.resource("s3")
+        s3_resource.Object(bucketName, landingDirectory).put(
+            Body=csv_buffer.getvalue()
+        )
+
+        print("Projections successfully sent!")
+    except Exception as e:
+        print("Error in sending dataframe to S3: ", str(e))

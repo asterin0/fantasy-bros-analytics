@@ -1,3 +1,4 @@
+import boto3
 import pandas as pd
 
 from fantasyBros.utils.devSetupLocal import createLocalEngine, fieldProcessing
@@ -32,6 +33,32 @@ def scrapeDataFromMinioBucket(
 
     except Exception as e:
         print("Error in extracting file from MinIO bucket: ", str(e))
+
+
+def scrapeDataFromS3(
+    awsAccessKeyId, awsSecretAccessKey, bucketName, fileDirectory
+):
+    """
+    Grabs data from S3 bucket as Pandas DataFrame
+    """
+    try:
+        # Creating s3 client
+        s3_session = boto3.Session(
+            aws_access_key_id=awsAccessKeyId,
+            aws_secret_access_key=awsSecretAccessKey,
+        )
+
+        # Sending dataframe to s3 client
+        s3_resource = s3_session.resource("s3")
+        s3_object = s3_resource.Object(bucketName, fileDirectory).get()
+
+        # Converting S3 bucket object into Pandas DataFrame
+        df = pd.read_csv(s3_object["Body"])
+
+        return df
+
+    except Exception as e:
+        print("Error in extracting file from S3 bucket: ", str(e))
 
 
 def sendDataToPostgres(
