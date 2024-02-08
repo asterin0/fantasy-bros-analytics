@@ -2,7 +2,7 @@ with pg_bench as (
 	select 'PG' as pos
 		,players."proj_fantasy_pts" as proj_benchmark_pts
 		,DENSE_RANK() over (order by players."proj_fantasy_pts" desc) as rank_by_proj
-	from "analysis"."dim_players" players
+	from "basketball"."dim_basketball_players" players
 	where players."pos_pg" = 1
 	),
 	
@@ -10,7 +10,7 @@ sg_bench as (
 	select 'SG' as pos
 		,players."proj_fantasy_pts" as proj_benchmark_pts
 		,DENSE_RANK() over (order by players."proj_fantasy_pts" desc) as rank_by_proj
-	from "analysis"."dim_players" players
+	from "basketball"."dim_basketball_players" players
 	where players."pos_sg" = 1
 	),
 	
@@ -18,7 +18,7 @@ sf_bench as (
 	select 'SF' as pos
 		,players."proj_fantasy_pts" as proj_benchmark_pts
 		,DENSE_RANK() over (order by players."proj_fantasy_pts" desc) as rank_by_proj
-	from "analysis"."dim_players" players
+	from "basketball"."dim_basketball_players" players
 	where players."pos_sf" = 1
 	),
 	
@@ -26,7 +26,7 @@ pf_bench as (
 	select 'PF' as pos
 		,players."proj_fantasy_pts" as proj_benchmark_pts
 		,DENSE_RANK() over (order by players."proj_fantasy_pts" desc) as rank_by_proj
-	from "analysis"."dim_players" players
+	from "basketball"."dim_basketball_players" players
 	where players."pos_pf" = 1
 	),
 	
@@ -34,7 +34,7 @@ c_bench as (
 	select 'C' as pos
 		,players."proj_fantasy_pts" as proj_benchmark_pts
 		,DENSE_RANK() over (order by players."proj_fantasy_pts" desc) as rank_by_proj
-	from "analysis"."dim_players" players
+	from "basketball"."dim_basketball_players" players
 	where players."pos_c" = 1
 	),
 	
@@ -42,7 +42,7 @@ g_bench as (
 	select 'G' as pos
 		,players."proj_fantasy_pts" as proj_benchmark_pts
 		,DENSE_RANK() over (order by players."proj_fantasy_pts" desc) as rank_by_proj
-	from "analysis"."dim_players" players
+	from "basketball"."dim_basketball_players" players
 	where players."pos_g" = 1
 	),
 	
@@ -50,7 +50,7 @@ f_bench as (
 	select 'F' as pos
 		,players."proj_fantasy_pts" as proj_benchmark_pts
 		,DENSE_RANK() over (order by players."proj_fantasy_pts" desc) as rank_by_proj
-	from "analysis"."dim_players" players
+	from "basketball"."dim_basketball_players" players
 	where players."pos_f" = 1
 	),
 
@@ -58,7 +58,7 @@ all_bench as (
 	select 'ALL' as pos
 		,players."proj_fantasy_pts" as proj_benchmark_pts
 		,DENSE_RANK() over (order by players."proj_fantasy_pts" desc) as rank_by_proj
-	from "analysis"."dim_players" players
+	from "basketball"."dim_basketball_players" players
 	),
 	
 total_bench as (

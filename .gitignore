@@ -1,6 +1,9 @@
 __pycache__/
 *.egg-info/
-logs/
-plugins/
+logs/*
+plugins/*
 config.cfg
 .env
+minio/
+.minio/
+.pytest_cache/

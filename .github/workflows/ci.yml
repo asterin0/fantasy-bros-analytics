@@ -1,0 +1,22 @@
+name: CI
+on: [pull_request]
+jobs:
+  run-ci-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
+      
+      - name: Build docker image and spin up container
+        run: |
+          docker build -t fantasybros-airflow .
+          docker run -di --entrypoint bash --name fantasybros-ci fantasybros-airflow
+      
+      - name: Run formatters and linter
+        run: |
+          docker exec fantasybros-ci isort .
+          docker exec fantasybros-ci python -m black -S --line-length 79 .
+          docker exec fantasybros-ci flake8 --extend-ignore=E501,W605 /opt/airflow
+
+      - name: Run tests
+        run: docker exec fantasybros-ci pytest -p no:warnings

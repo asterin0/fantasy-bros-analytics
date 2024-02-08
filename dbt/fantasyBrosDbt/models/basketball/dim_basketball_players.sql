@@ -1,36 +1,36 @@
 with point_guards as (
 	select *
-	from "staging"."pointGuards"
+	from "staging"."pg"
 	),
 
 shooting_guards as (
 	select *
-	from "staging"."shootingGuards"
+	from "staging"."sg"
 	),
 
 small_forwards as (
 	select *
-	from "staging"."smallForwards"
+	from "staging"."sf"
 	),
 
 power_forwards as (
 	select *
-	from "staging"."powerForwards"
+	from "staging"."pf"
 	),
 
 centers as (
 	select *
-	from "staging"."centers"
+	from "staging"."c"
 	),
 
 guards as (
 	select *
-	from "staging"."guards"
+	from "staging"."g"
 	),
 
 forwards as (
 	select *
-	from "staging"."forwards"
+	from "staging"."f"
 	),
 
 player_projections as (
@@ -51,7 +51,7 @@ player_projections as (
 		,ap."TO" as proj_tov
 		,ap."GP" as proj_gp
 		,ap."MIN" as proj_mins
-	from "staging"."allPlayers" ap
+	from "staging"."overall" ap
 	inner join "staging"."proBasketballRefStats" stat on ((split_part(stat."Player", ' ', 1)=split_part(ap."Player", ' ', 1)) and (split_part(stat."Player", ' ', 2)=split_part(ap."Player", ' ', 2)))
 	),
 
