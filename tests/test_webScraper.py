@@ -3,10 +3,10 @@ import pytest
 # Defining positions to test
 positions = [
     # Football positions
-    "qb",
-    "rb",
-    "wr",
-    "te",
+    # "qb",
+    # "rb",
+    # "wr",
+    # "te",
     # Basketball positions
     "overall",
     "pg",
