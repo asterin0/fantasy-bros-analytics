@@ -18,7 +18,6 @@ jobs:
 
       - name: Build docker image
         run: |
-          cd fantasy-bros-analytics
           docker build -t fantasybros-airflow .
 
       - name: Spin up container
