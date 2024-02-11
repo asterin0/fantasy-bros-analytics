@@ -42,7 +42,7 @@ endpoints = [
 default_args = {
     "owner": "airflow",
     "depends_on_past": False,
-    "start_date": pendulum.today("UTC"),
+    "start_date": pendulum.datetime(2024, 2, 8),
     "retries": 1,
     "retry_delay": timedelta(minutes=1),
 }
@@ -51,7 +51,8 @@ default_args = {
 dag = DAG(
     "basketballProjsDev",
     default_args=default_args,
-    schedule="@daily",
+    schedule_interval="0 21 * * *",
+    catchup=False,
 )
 
 
