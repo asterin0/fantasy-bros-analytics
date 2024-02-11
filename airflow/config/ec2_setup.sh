@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo "-------------------------START SETUP---------------------------"
 sudo apt-get -y update
@@ -26,3 +26,9 @@ cd /home/ubuntu && git clone ${GITHUB_REPO_URL}
 
 echo 'CD to fantasy-bros-analytics directory'
 cd fantasy-bros-analytics
+
+echo 'Build fantasyBros Docker image'
+docker build -t fantasybros-airflow .
+
+echo 'Spin up fantasyBros Webserver'
+docker run --name fantasybros-webserver --env-file .env -p 8008:8080 fantasybros-airflow
