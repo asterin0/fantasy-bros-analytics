@@ -1,0 +1,25 @@
+name: CD
+on:
+  push:
+    branches:
+      - dev-github-actions
+jobs:
+  deploy-to-ec2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          SOURCE: "./"
+          TARGET: "/home/ubuntu/fantasy-bros-analytics"
+
+      - name: Build docker image
+        run: |
+          cd fantasy-bros-analytics
+          docker build -t fantasybros-airflow .
+
+      - name: Spin up container
+        run: docker run --name fantasybros-webserver --env-file .env -p 8008:8080 fantasybros-airflow
