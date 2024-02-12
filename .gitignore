@@ -7,3 +7,4 @@ config.cfg
 minio/
 .minio/
 .pytest_cache/
+*.pem
