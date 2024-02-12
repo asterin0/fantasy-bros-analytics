@@ -2,7 +2,7 @@ name: CD
 on:
   push:
     branches:
-      - dev-github-actions
+      - main
 jobs:
   deploy-to-ec2:
     runs-on: ubuntu-latest
