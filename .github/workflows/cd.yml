@@ -16,5 +16,6 @@ jobs:
           SOURCE: "./"
           TARGET: "/home/ubuntu/fantasy-bros-analytics"
           SCRIPT_AFTER: |
+            cd fantasy-bros-analytics
             docker build -t fantasybros-airflow .
             docker run --name fantasybros-webserver --env-file .env -p 8008:8080 fantasybros-airflow
